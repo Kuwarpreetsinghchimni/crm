@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Contacts - Sidak CRM{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Contacts Directory</h1>
+        <p class="page-subtitle">Manage all personal and professional business contacts.</p>
+    </div>
+    <a href="{{ url_for('contact_create') }}" class="btn btn-primary">+ Add New Contact</a>
+</div>
+
+<!-- Search & Filter Bar -->
+<div class="card" style="margin-bottom: 1.25rem;">
+    <div class="card-body" style="padding: 1rem 1.25rem;">
+        <form method="GET" action="{{ url_for('contacts_list') }}" class="filter-bar">
+            <input 
+                type="text" 
+                name="q" 
+                class="search-input" 
+                placeholder="Search by name, email, or phone..." 
+                value="{{ search_query }}"
+            >
+            <button type="submit" class="btn btn-secondary btn-sm">Search</button>
+            {% if search_query %}
+                <a href="{{ url_for('contacts_list') }}" class="btn btn-link btn-sm">Clear Search</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<!-- Contacts Table View -->
+<div class="card">
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th># ID</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Company</th>
+                    <th>Job Title</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for contact in contacts %}
+                    <tr>
+                        <td>#{{ contact.id }}</td>
+                        <td>
+                            <a href="{{ url_for('contact_detail', contact_id=contact.id) }}" style="text-decoration: none; color: var(--primary); font-weight: 600;">
+                                {{ contact.full_name }}
+                            </a>
+                        </td>
+                        <td>{{ contact.email }}</td>
+                        <td>{{ contact.phone or '—' }}</td>
+                        <td>{{ contact.company or '—' }}</td>
+                        <td>{{ contact.job_title or '—' }}</td>
+                        <td>
+                            <div class="action-buttons" style="justify-content: flex-end;">
+                                <a href="{{ url_for('contact_detail', contact_id=contact.id) }}" class="btn btn-secondary btn-sm">View</a>
+                                <a href="{{ url_for('contact_edit', contact_id=contact.id) }}" class="btn btn-secondary btn-sm">Edit</a>
+                                <form 
+                                    method="POST" 
+                                    action="{{ url_for('contact_delete', contact_id=contact.id) }}" 
+                                    class="confirm-delete-form"
+                                    data-item-name="{{ contact.full_name }}"
+                                    data-item-type="contact"
+                                    style="display: inline;"
+                                >
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <div class="empty-icon">👥</div>
+                                <h3 class="empty-title">
+                                    {% if search_query %}
+                                        No contacts matched "{{ search_query }}"
+                                    {% else %}
+                                        No contacts available
+                                    {% endif %}
+                                </h3>
+                                <p class="empty-desc">Get started by creating your first contact.</p>
+                                <a href="{{ url_for('contact_create') }}" class="btn btn-primary">+ Add Contact</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

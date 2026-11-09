@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Leads - Sidak CRM{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Leads Pipeline</h1>
+        <p class="page-subtitle">Track, filter, and qualify sales prospects.</p>
+    </div>
+    <a href="{{ url_for('lead_create') }}" class="btn btn-primary">+ Add New Lead</a>
+</div>
+
+<!-- Search & Status Filter Bar -->
+<div class="card" style="margin-bottom: 1.25rem;">
+    <div class="card-body" style="padding: 1rem 1.25rem;">
+        <form method="GET" action="{{ url_for('leads_list') }}" class="filter-bar">
+            <input 
+                type="text" 
+                name="q" 
+                class="search-input" 
+                placeholder="Search name, email, phone, company..." 
+                value="{{ search_query }}"
+            >
+            <select name="status" class="select-filter">
+                <option value="">All Statuses</option>
+                {% for st in lead_statuses %}
+                    <option value="{{ st }}" {% if status_filter == st %}selected{% endif %}>{{ st }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+            {% if search_query or status_filter %}
+                <a href="{{ url_for('leads_list') }}" class="btn btn-link btn-sm">Reset Filters</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<!-- Leads Table View -->
+<div class="card">
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th># ID</th>
+                    <th>Lead Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Company</th>
+                    <th>Source</th>
+                    <th>Status</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lead in leads %}
+                    <tr>
+                        <td>#{{ lead.id }}</td>
+                        <td>
+                            <a href="{{ url_for('lead_detail', lead_id=lead.id) }}" style="text-decoration: none; color: var(--primary); font-weight: 600;">
+                                {{ lead.full_name }}
+                            </a>
+                        </td>
+                        <td>{{ lead.email or '—' }}</td>
+                        <td>{{ lead.phone or '—' }}</td>
+                        <td>{{ lead.company or '—' }}</td>
+                        <td>{{ lead.source or '—' }}</td>
+                        <td>
+                            <span class="badge badge-{{ lead.status.lower() }}">
+                                {{ lead.status }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons" style="justify-content: flex-end;">
+                                <a href="{{ url_for('lead_detail', lead_id=lead.id) }}" class="btn btn-secondary btn-sm">View</a>
+                                <a href="{{ url_for('lead_edit', lead_id=lead.id) }}" class="btn btn-secondary btn-sm">Edit</a>
+                                <form 
+                                    method="POST" 
+                                    action="{{ url_for('lead_delete', lead_id=lead.id) }}" 
+                                    class="confirm-delete-form"
+                                    data-item-name="{{ lead.full_name }}"
+                                    data-item-type="lead"
+                                    style="display: inline;"
+                                >
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <div class="empty-icon">🎯</div>
+                                <h3 class="empty-title">
+                                    {% if search_query or status_filter %}
+                                        No leads matched your criteria
+                                    {% else %}
+                                        No leads available
+                                    {% endif %}
+                                </h3>
+                                <p class="empty-desc">Capture potential prospects by adding your first lead.</p>
+                                <a href="{{ url_for('lead_create') }}" class="btn btn-primary">+ Add Lead</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}{{ action }} Customer - Sidak CRM{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ action }} Customer</h1>
+        <p class="page-subtitle">Manage customer profile and contact details.</p>
+    </div>
+    <a href="{{ url_for('customers_list') }}" class="btn btn-secondary">&larr; Back to Customers</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form 
+            method="POST" 
+            action="{% if action == 'Edit' %}{{ url_for('customer_edit', customer_id=customer_id) }}{% else %}{{ url_for('customer_create') }}{% endif %}"
+            data-validate="true"
+        >
+            <div class="form-grid">
+                <!-- Full Name -->
+                <div class="form-group">
+                    <label class="form-label" for="full_name">
+                        Customer Name <span class="required">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="full_name" 
+                        name="full_name" 
+                        class="form-control" 
+                        value="{{ form_data.full_name or '' }}" 
+                        required 
+                        placeholder="e.g. Acme Tech Solutions"
+                    >
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label class="form-label" for="email">
+                        Email Address <span class="required">*</span>
+                    </label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        class="form-control" 
+                        value="{{ form_data.email or '' }}" 
+                        required 
+                        placeholder="e.g. billing@acmetech.com"
+                    >
+                </div>
+
+                <!-- Phone -->
+                <div class="form-group">
+                    <label class="form-label" for="phone">Phone Number</label>
+                    <input 
+                        type="text" 
+                        id="phone" 
+                        name="phone" 
+                        class="form-control" 
+                        value="{{ form_data.phone or '' }}" 
+                        placeholder="e.g. +1 555-0394"
+                    >
+                </div>
+
+                <!-- Company -->
+                <div class="form-group">
+                    <label class="form-label" for="company">Company / Organization</label>
+                    <input 
+                        type="text" 
+                        id="company" 
+                        name="company" 
+                        class="form-control" 
+                        value="{{ form_data.company or '' }}" 
+                        placeholder="e.g. Acme Corp"
+                    >
+                </div>
+
+                <!-- Address -->
+                <div class="form-group-full form-group">
+                    <label class="form-label" for="address">Billing / Physical Address</label>
+                    <textarea 
+                        id="address" 
+                        name="address" 
+                        class="form-control" 
+                        placeholder="Headquarters address, office suite..."
+                    >{{ form_data.address or '' }}</textarea>
+                </div>
+
+                <!-- Notes -->
+                <div class="form-group-full form-group">
+                    <label class="form-label" for="notes">Account Notes</label>
+                    <textarea 
+                        id="notes" 
+                        name="notes" 
+                        class="form-control" 
+                        placeholder="Key client agreements, history, preferences..."
+                    >{{ form_data.notes or '' }}</textarea>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a href="{{ url_for('customers_list') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    {% if action == 'Edit' %}Save Changes{% else %}Create Customer{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

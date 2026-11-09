@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lead.full_name }} - Lead Details{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ lead.full_name }}</h1>
+        <p class="page-subtitle">Lead Record #{{ lead.id }}</p>
+    </div>
+    <div class="action-buttons">
+        <a href="{{ url_for('leads_list') }}" class="btn btn-secondary">&larr; Back to Leads</a>
+        <a href="{{ url_for('lead_edit', lead_id=lead.id) }}" class="btn btn-primary">Edit Lead</a>
+        <form 
+            method="POST" 
+            action="{{ url_for('lead_delete', lead_id=lead.id) }}" 
+            class="confirm-delete-form"
+            data-item-name="{{ lead.full_name }}"
+            data-item-type="lead"
+            style="display: inline;"
+        >
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Lead Overview</h2>
+        <!-- Quick Status Change Form -->
+        <form method="POST" action="{{ url_for('lead_quick_status', lead_id=lead.id) }}" style="display: flex; align-items: center; gap: 0.5rem;">
+            <label for="quick_status" style="font-size: 0.85rem; font-weight: 600; color: var(--gray-600);">Status:</label>
+            <select name="status" id="quick_status" class="select-filter" style="padding: 0.35rem 0.65rem;">
+                {% for st in lead_statuses %}
+                    <option value="{{ st }}" {% if lead.status == st %}selected{% endif %}>{{ st }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-secondary btn-sm">Update</button>
+        </form>
+    </div>
+    <div class="card-body">
+        <div class="detail-grid">
+            <div class="detail-item">
+                <div class="detail-label">Lead Name</div>
+                <div class="detail-value">{{ lead.full_name }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Current Status</div>
+                <div class="detail-value">
+                    <span class="badge badge-{{ lead.status.lower() }}">{{ lead.status }}</span>
+                </div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Email Address</div>
+                <div class="detail-value">
+                    {% if lead.email %}
+                        <a href="mailto:{{ lead.email }}" style="color: var(--primary); text-decoration: none;">
+                            {{ lead.email }}
+                        </a>
+                    {% else %}
+                        —
+                    {% endif %}
+                </div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Phone</div>
+                <div class="detail-value">{{ lead.phone or '—' }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Company</div>
+                <div class="detail-value">{{ lead.company or '—' }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Lead Source</div>
+                <div class="detail-value">{{ lead.source or '—' }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Created At</div>
+                <div class="detail-value">{{ lead.created_at.strftime('%B %d, %Y at %I:%M %p') if lead.created_at else '—' }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Last Updated</div>
+                <div class="detail-value">{{ lead.updated_at.strftime('%B %d, %Y at %I:%M %p') if lead.updated_at else '—' }}</div>
+            </div>
+        </div>
+
+        <div style="margin-top: 1.25rem;">
+            <div class="detail-label" style="margin-bottom: 0.5rem;">Notes &amp; Context</div>
+            <div style="background-color: var(--gray-50); padding: 1rem; border-radius: var(--radius); border: 1px solid var(--gray-200); white-space: pre-line;">
+                {{ lead.notes or 'No notes recorded for this lead.' }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

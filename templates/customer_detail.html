@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}{{ customer.full_name }} - Customer Details{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ customer.full_name }}</h1>
+        <p class="page-subtitle">Customer Account #{{ customer.id }}</p>
+    </div>
+    <div class="action-buttons">
+        <a href="{{ url_for('customers_list') }}" class="btn btn-secondary">&larr; Back to Customers</a>
+        <a href="{{ url_for('customer_edit', customer_id=customer.id) }}" class="btn btn-primary">Edit Customer</a>
+        <form 
+            method="POST" 
+            action="{{ url_for('customer_delete', customer_id=customer.id) }}" 
+            class="confirm-delete-form"
+            data-item-name="{{ customer.full_name }}"
+            data-item-type="customer"
+            style="display: inline;"
+        >
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Customer Profile</h2>
+    </div>
+    <div class="card-body">
+        <div class="detail-grid">
+            <div class="detail-item">
+                <div class="detail-label">Customer Name</div>
+                <div class="detail-value">{{ customer.full_name }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Email Address</div>
+                <div class="detail-value">
+                    <a href="mailto:{{ customer.email }}" style="color: var(--primary); text-decoration: none;">
+                        {{ customer.email }}
+                    </a>
+                </div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Phone</div>
+                <div class="detail-value">{{ customer.phone or '—' }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Company</div>
+                <div class="detail-value">{{ customer.company or '—' }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Customer Since</div>
+                <div class="detail-value">{{ customer.created_at.strftime('%B %d, %Y') if customer.created_at else '—' }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Last Updated</div>
+                <div class="detail-value">{{ customer.updated_at.strftime('%B %d, %Y at %I:%M %p') if customer.updated_at else '—' }}</div>
+            </div>
+        </div>
+
+        <div style="margin-top: 1rem;">
+            <div class="detail-label" style="margin-bottom: 0.5rem;">Billing / Physical Address</div>
+            <div style="background-color: var(--gray-50); padding: 1rem; border-radius: var(--radius); border: 1px solid var(--gray-200); white-space: pre-line;">
+                {{ customer.address or 'No billing address provided.' }}
+            </div>
+        </div>
+
+        <div style="margin-top: 1.25rem;">
+            <div class="detail-label" style="margin-bottom: 0.5rem;">Account Notes</div>
+            <div style="background-color: var(--gray-50); padding: 1rem; border-radius: var(--radius); border: 1px solid var(--gray-200); white-space: pre-line;">
+                {{ customer.notes or 'No account notes added.' }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

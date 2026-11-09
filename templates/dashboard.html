@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Sidak CRM{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Dashboard Overview</h1>
+        <p class="page-subtitle">Welcome to your local CRM workspace.</p>
+    </div>
+    <div class="action-buttons">
+        <a href="{{ url_for('contact_create') }}" class="btn btn-secondary btn-sm">+ Add Contact</a>
+        <a href="{{ url_for('lead_create') }}" class="btn btn-secondary btn-sm">+ Add Lead</a>
+        <a href="{{ url_for('customer_create') }}" class="btn btn-primary btn-sm">+ Add Customer</a>
+    </div>
+</div>
+
+<!-- 1. Top Metrics Cards -->
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div>
+            <div class="metric-title">Total Contacts</div>
+            <div class="metric-value">{{ total_contacts }}</div>
+        </div>
+        <div class="metric-icon-badge icon-blue">👤</div>
+    </div>
+    <div class="metric-card">
+        <div>
+            <div class="metric-title">Active Leads</div>
+            <div class="metric-value">{{ total_leads }}</div>
+        </div>
+        <div class="metric-icon-badge icon-amber">🎯</div>
+    </div>
+    <div class="metric-card">
+        <div>
+            <div class="metric-title">Total Customers</div>
+            <div class="metric-value">{{ total_customers }}</div>
+        </div>
+        <div class="metric-icon-badge icon-emerald">💼</div>
+    </div>
+</div>
+
+<!-- 2. Lead Status Breakdown -->
+<div class="pipeline-section">
+    <div class="pipeline-title">Lead Pipeline Stages</div>
+    <div class="pipeline-pills">
+        {% for status in lead_statuses %}
+            <a href="{{ url_for('leads_list', status=status) }}" class="pipeline-pill" style="text-decoration: none; color: inherit;">
+                <span class="badge badge-{{ status.lower() }}">{{ status }}</span>
+                <span class="count">{{ status_counts.get(status, 0) }}</span>
+            </a>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- 3. Recent Entries Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem;">
+    <!-- Recent Contacts -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Recent Contacts</h2>
+            <a href="{{ url_for('contacts_list') }}" class="btn btn-link btn-sm">View All &rarr;</a>
+        </div>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in recent_contacts %}
+                        <tr>
+                            <td><strong>{{ c.full_name }}</strong></td>
+                            <td>{{ c.email }}</td>
+                            <td>
+                                <a href="{{ url_for('contact_detail', contact_id=c.id) }}" class="btn btn-secondary btn-sm">View</a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="3" style="text-align: center; color: var(--gray-400); padding: 1.5rem;">
+                                No contacts added yet.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent Leads -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Recent Leads</h2>
+            <a href="{{ url_for('leads_list') }}" class="btn btn-link btn-sm">View All &rarr;</a>
+        </div>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for l in recent_leads %}
+                        <tr>
+                            <td><strong>{{ l.full_name }}</strong></td>
+                            <td>
+                                <span class="badge badge-{{ l.status.lower() }}">{{ l.status }}</span>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('lead_detail', lead_id=l.id) }}" class="btn btn-secondary btn-sm">View</a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="3" style="text-align: center; color: var(--gray-400); padding: 1.5rem;">
+                                No leads added yet.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent Customers -->
+    <div class="card" style="grid-column: 1 / -1;">
+        <div class="card-header">
+            <h2 class="card-title">Recent Customers</h2>
+            <a href="{{ url_for('customers_list') }}" class="btn btn-link btn-sm">View All &rarr;</a>
+        </div>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Company</th>
+                        <th>Created</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cust in recent_customers %}
+                        <tr>
+                            <td><strong>{{ cust.full_name }}</strong></td>
+                            <td>{{ cust.email }}</td>
+                            <td>{{ cust.company or '—' }}</td>
+                            <td>{{ cust.created_at.strftime('%Y-%m-%d') if cust.created_at else '—' }}</td>
+                            <td>
+                                <a href="{{ url_for('customer_detail', customer_id=cust.id) }}" class="btn btn-secondary btn-sm">View</a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--gray-400); padding: 1.5rem;">
+                                No customers added yet.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

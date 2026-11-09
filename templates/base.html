@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sidak CRM{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v='particle-wallpaper-3') }}">
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('dashboard') }}" class="brand">
+                <span>⚡ Customer_Relation_Management</span>
+                <!-- <span class="brand-badge">Local</span> -->
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li>
+                        <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.path == '/' %}active{% endif %}">
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('contacts_list') }}" class="nav-link {% if request.path.startswith('/contacts') %}active{% endif %}">
+                            Contacts
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('leads_list') }}" class="nav-link {% if request.path.startswith('/leads') %}active{% endif %}">
+                            Leads
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('customers_list') }}" class="nav-link {% if request.path.startswith('/customers') %}active{% endif %}">
+                            Customers
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-content">
+        <!-- Flash Alert Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="alerts-container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <span>{{ message }}</span>
+                            <button type="button" class="alert-close" aria-label="Close">&times;</button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Error page fallback (if triggered via error handler) -->
+        {% if error_title %}
+            <div class="card">
+                <div class="card-body empty-state">
+                    <div class="empty-icon">⚠️</div>
+                    <h2 class="empty-title">{{ error_title }}</h2>
+                    <p class="empty-desc">{{ error_message }}</p>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Return to Dashboard</a>
+                </div>
+            </div>
+        {% else %}
+            {% block content %}{% endblock %}
+        {% endif %}
+    </main>
+
+    <!-- Global Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3 class="modal-title">Confirm Deletion</h3>
+            <p id="deleteModalMessage" class="modal-body">
+                Are you sure you want to permanently delete this record? This action cannot be undone.
+            </p>
+            <div class="modal-actions">
+                <button type="button" id="cancelDeleteBtn" class="btn btn-secondary">Cancel</button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Customer_Relation_Management &bull; Running locally on Python &amp; Flask &bull; MySQL Powered</p>
+    </footer>
+
+    <!-- Vanilla JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/wallpaper.js', v='particle-wallpaper-3') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

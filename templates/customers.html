@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Customers - Sidak CRM{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Customers Directory</h1>
+        <p class="page-subtitle">Manage paying clients and business accounts.</p>
+    </div>
+    <a href="{{ url_for('customer_create') }}" class="btn btn-primary">+ Add New Customer</a>
+</div>
+
+<!-- Search Bar -->
+<div class="card" style="margin-bottom: 1.25rem;">
+    <div class="card-body" style="padding: 1rem 1.25rem;">
+        <form method="GET" action="{{ url_for('customers_list') }}" class="filter-bar">
+            <input 
+                type="text" 
+                name="q" 
+                class="search-input" 
+                placeholder="Search name, email, phone, company..." 
+                value="{{ search_query }}"
+            >
+            <button type="submit" class="btn btn-secondary btn-sm">Search</button>
+            {% if search_query %}
+                <a href="{{ url_for('customers_list') }}" class="btn btn-link btn-sm">Clear Search</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<!-- Customers Table View -->
+<div class="card">
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th># ID</th>
+                    <th>Customer Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Company</th>
+                    <th>Since</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customer in customers %}
+                    <tr>
+                        <td>#{{ loop.index }}</td>
+                        <td>
+                            <a href="{{ url_for('customer_detail', customer_id=customer.id) }}" style="text-decoration: none; color: var(--primary); font-weight: 600;">
+                                {{ customer.full_name }}
+                            </a>
+                        </td>
+                        <td>{{ customer.email }}</td>
+                        <td>{{ customer.phone or '—' }}</td>
+                        <td>{{ customer.company or '—' }}</td>
+                        <td>{{ customer.created_at.strftime('%Y-%m-%d') if customer.created_at else '—' }}</td>
+                        <td>
+                            <div class="action-buttons" style="justify-content: flex-end;">
+                                <a href="{{ url_for('customer_detail', customer_id=customer.id) }}" class="btn btn-secondary btn-sm">View</a>
+                                <a href="{{ url_for('customer_edit', customer_id=customer.id) }}" class="btn btn-secondary btn-sm">Edit</a>
+                                <form 
+                                    method="POST" 
+                                    action="{{ url_for('customer_delete', customer_id=customer.id) }}" 
+                                    class="confirm-delete-form"
+                                    data-item-name="{{ customer.full_name }}"
+                                    data-item-type="customer"
+                                    style="display: inline;"
+                                >
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <div class="empty-icon">💼</div>
+                                <h3 class="empty-title">
+                                    {% if search_query %}
+                                        No customers matched "{{ search_query }}"
+                                    {% else %}
+                                        No customers available
+                                    {% endif %}
+                                </h3>
+                                <p class="empty-desc">Begin building customer relationships by creating your first record.</p>
+                                <a href="{{ url_for('customer_create') }}" class="btn btn-primary">+ Add Customer</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

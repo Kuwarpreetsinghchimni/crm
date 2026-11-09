@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}{{ action }} Lead - Sidak CRM{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ action }} Lead</h1>
+        <p class="page-subtitle">Record details about this sales lead or prospect.</p>
+    </div>
+    <a href="{{ url_for('leads_list') }}" class="btn btn-secondary">&larr; Back to Leads</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form 
+            method="POST" 
+            action="{% if action == 'Edit' %}{{ url_for('lead_edit', lead_id=lead_id) }}{% else %}{{ url_for('lead_create') }}{% endif %}"
+            data-validate="true"
+        >
+            <div class="form-grid">
+                <!-- Full Name -->
+                <div class="form-group">
+                    <label class="form-label" for="full_name">
+                        Full Name <span class="required">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="full_name" 
+                        name="full_name" 
+                        class="form-control" 
+                        value="{{ form_data.full_name or '' }}" 
+                        required 
+                        placeholder="e.g. Sarah Jenkins"
+                    >
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label class="form-label" for="email">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        class="form-control" 
+                        value="{{ form_data.email or '' }}" 
+                        placeholder="e.g. sarah@prospect.com"
+                    >
+                </div>
+
+                <!-- Phone -->
+                <div class="form-group">
+                    <label class="form-label" for="phone">Phone Number</label>
+                    <input 
+                        type="text" 
+                        id="phone" 
+                        name="phone" 
+                        class="form-control" 
+                        value="{{ form_data.phone or '' }}" 
+                        placeholder="e.g. +1 555-0283"
+                    >
+                </div>
+
+                <!-- Company -->
+                <div class="form-group">
+                    <label class="form-label" for="company">Company</label>
+                    <input 
+                        type="text" 
+                        id="company" 
+                        name="company" 
+                        class="form-control" 
+                        value="{{ form_data.company or '' }}" 
+                        placeholder="e.g. Apex Global"
+                    >
+                </div>
+
+                <!-- Source -->
+                <div class="form-group">
+                    <label class="form-label" for="source">Lead Source</label>
+                    <input 
+                        type="text" 
+                        id="source" 
+                        name="source" 
+                        class="form-control" 
+                        value="{{ form_data.source or '' }}" 
+                        placeholder="e.g. Website, Referral, LinkedIn, Cold Call"
+                    >
+                </div>
+
+                <!-- Status -->
+                <div class="form-group">
+                    <label class="form-label" for="status">
+                        Pipeline Status <span class="required">*</span>
+                    </label>
+                    <select id="status" name="status" class="form-control" required>
+                        {% for st in lead_statuses %}
+                            <option value="{{ st }}" {% if (form_data.status or 'New') == st %}selected{% endif %}>
+                                {{ st }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Notes -->
+                <div class="form-group-full form-group">
+                    <label class="form-label" for="notes">Lead Notes &amp; Background</label>
+                    <textarea 
+                        id="notes" 
+                        name="notes" 
+                        class="form-control" 
+                        placeholder="Context about requirements, budget, timeline, initial interaction..."
+                    >{{ form_data.notes or '' }}</textarea>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a href="{{ url_for('leads_list') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    {% if action == 'Edit' %}Save Changes{% else %}Create Lead{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

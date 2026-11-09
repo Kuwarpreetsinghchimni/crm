@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}{{ contact.full_name }} - Contact Details{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ contact.full_name }}</h1>
+        <p class="page-subtitle">Contact Record #{{ contact.id }}</p>
+    </div>
+    <div class="action-buttons">
+        <a href="{{ url_for('contacts_list') }}" class="btn btn-secondary">&larr; Back to List</a>
+        <a href="{{ url_for('contact_edit', contact_id=contact.id) }}" class="btn btn-primary">Edit Contact</a>
+        <form 
+            method="POST" 
+            action="{{ url_for('contact_delete', contact_id=contact.id) }}" 
+            class="confirm-delete-form"
+            data-item-name="{{ contact.full_name }}"
+            data-item-type="contact"
+            style="display: inline;"
+        >
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Contact Profile</h2>
+    </div>
+    <div class="card-body">
+        <div class="detail-grid">
+            <div class="detail-item">
+                <div class="detail-label">Full Name</div>
+                <div class="detail-value">{{ contact.full_name }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Email Address</div>
+                <div class="detail-value">
+                    <a href="mailto:{{ contact.email }}" style="color: var(--primary); text-decoration: none;">
+                        {{ contact.email }}
+                    </a>
+                </div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Phone</div>
+                <div class="detail-value">{{ contact.phone or '—' }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Company</div>
+                <div class="detail-value">{{ contact.company or '—' }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Job Title</div>
+                <div class="detail-value">{{ contact.job_title or '—' }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Record Created</div>
+                <div class="detail-value">{{ contact.created_at.strftime('%B %d, %Y at %I:%M %p') if contact.created_at else '—' }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Last Updated</div>
+                <div class="detail-value">{{ contact.updated_at.strftime('%B %d, %Y at %I:%M %p') if contact.updated_at else '—' }}</div>
+            </div>
+        </div>
+
+        <div style="margin-top: 1rem;">
+            <div class="detail-label" style="margin-bottom: 0.5rem;">Address</div>
+            <div style="background-color: var(--gray-50); padding: 1rem; border-radius: var(--radius); border: 1px solid var(--gray-200); white-space: pre-line;">
+                {{ contact.address or 'No address provided.' }}
+            </div>
+        </div>
+
+        <div style="margin-top: 1.25rem;">
+            <div class="detail-label" style="margin-bottom: 0.5rem;">Notes</div>
+            <div style="background-color: var(--gray-50); padding: 1rem; border-radius: var(--radius); border: 1px solid var(--gray-200); white-space: pre-line;">
+                {{ contact.notes or 'No internal notes entered.' }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
