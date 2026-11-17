@@ -15,3 +15,5 @@ class Config:
     MYSQL_USER = os.getenv("MYSQL_USER", "root")
     MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "")
     MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "crm_db")
+    # Render Postgres URL; when set it takes precedence over local MySQL.
+    DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
