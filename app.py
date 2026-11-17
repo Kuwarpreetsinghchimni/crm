@@ -13,7 +13,7 @@ app.config.from_object(Config)
 
 # Render imports the app through Gunicorn, so initialize its attached database
 # at module load. The DDL is idempotent and creates only missing CRM tables.
-if Config.DATABASE_URL:
+if Config.DB_TYPE == "mysql" or Config.DATABASE_URL:
     _db_ready, _db_message = init_db()
     if not _db_ready:
         app.logger.error("Database initialization failed: %s", _db_message)

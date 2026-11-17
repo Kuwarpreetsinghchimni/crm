@@ -6,7 +6,7 @@ from config import Config
 
 
 def _using_postgres():
-    return bool(Config.DATABASE_URL)
+    return bool(Config.DATABASE_URL) and Config.DB_TYPE != "mysql"
 
 
 def get_db_connection(use_database=True):
@@ -27,6 +27,15 @@ def get_db_connection(use_database=True):
               "user": Config.MYSQL_USER, "password": Config.MYSQL_PASSWORD}
     if use_database:
         params["database"] = Config.MYSQL_DATABASE
+
+    # Remote hosted MySQL services such as TiDB require TLS. Certificate and
+    # hostname verification can be enabled with MYSQL_SSL_VERIFY=true.
+    remote_mysql = Config.MYSQL_HOST not in ("127.0.0.1", "localhost")
+    if Config.MYSQL_SSL_CA:
+        params["ssl_ca"] = Config.MYSQL_SSL_CA
+    if Config.MYSQL_SSL_VERIFY or remote_mysql:
+        params["ssl_verify_cert"] = True
+        params["ssl_verify_identity"] = True
     try:
         return mysql.connector.connect(**params)
     except MySQLError as e:
@@ -56,7 +65,7 @@ def init_db(schema_path=None):
     with open(schema_path, "r", encoding="utf-8") as f:
         schema_sql = f.read()
 
-    conn = get_db_connection(use_database=not _using_postgres())
+    conn = get_db_connection(use_database=False if not _using_postgres() else True)
     if not conn:
         return False, "Failed to connect to the configured database."
     cursor = None

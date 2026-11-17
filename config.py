@@ -17,3 +17,8 @@ class Config:
     MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "crm_db")
     # Render Postgres URL; when set it takes precedence over local MySQL.
     DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+
+    # Set DB_TYPE=mysql on Render to use a hosted MySQL-compatible database.
+    DB_TYPE = os.getenv("DB_TYPE", "").strip().lower()
+    MYSQL_SSL_CA = os.getenv("MYSQL_SSL_CA", "").strip()
+    MYSQL_SSL_VERIFY = os.getenv("MYSQL_SSL_VERIFY", "").strip().lower() in ("1", "true", "yes")
